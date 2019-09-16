@@ -1,23 +1,30 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Todo, fetchTodos } from '../actions/index';
+import { Todo, fetchTodos, deleteTodo } from '../actions/index';
 //describes our entire redux state
 import { StoreState } from '../reducers';
 
 interface AppProps {
   todos: Todo[];
-  fetchTodos(): any;
+  fetchTodos: Function;
+  deleteTodo: typeof deleteTodo;
 }
 
 class _App extends React.Component<AppProps> {
   handleFetchTodos = (): void => {
     this.props.fetchTodos();
   };
-
+  onTodoClick = (id: number): void => {
+    this.props.deleteTodo(id);
+  };
   renderList(): JSX.Element[] {
-    return this.props.todos.map((todo: Todo) => (
-      <li key={todo.id}>{todo.title}</li>
-    ));
+    return this.props.todos.map((todo: Todo) => {
+      return (
+        <div onClick={() => this.onTodoClick(todo.id)} key={todo.id}>
+          {todo.title}
+        </div>
+      );
+    });
   }
   render() {
     console.log(this.props.todos);
@@ -38,5 +45,5 @@ const mapStateToProps = ({ todos }: StoreState): { todos: Todo[] } => {
 //we want to export the connected version of app
 export const App = connect(
   mapStateToProps,
-  { fetchTodos }
+  { fetchTodos, deleteTodo }
 )(_App);
